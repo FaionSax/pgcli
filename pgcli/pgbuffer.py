@@ -1,6 +1,5 @@
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters import Condition
-from .packages.parseutils.utils import is_open_quote
 
 
 class PGBuffer(Buffer):
@@ -16,18 +15,10 @@ class PGBuffer(Buffer):
                                              tempfile_suffix='.sql', **kwargs)
 
 
-def _is_complete(sql):
-    # A complete command is an sql statement that ends with a semicolon, unless
-    # there's an open quote surrounding it, as is common when writing a
-    # CREATE FUNCTION command
-    return sql.endswith(';') and not is_open_quote(sql)
-
-
 def _multiline_exception(text):
     text = text.strip()
     return (text.startswith('\\') or   # Special Command
             text.endswith('\e') or     # Ended with \e which should launch the editor.
-            _is_complete(text) or      # A complete SQL command
             (text == 'exit') or        # Exit doesn't need semi-colon
             (text == 'quit') or        # Quit doesn't need semi-colon
             (text == ':q') or          # To all the vim fans out there
